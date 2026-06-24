@@ -412,7 +412,7 @@ app.get('/api/admin/users', adminAuth, async (req, res) => {
 app.post('/api/admin/users', adminAuth, async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ ok: false, error: 'Логін та пароль обов\\'язкові' });
+    if (!username || !password) return res.status(400).json({ ok: false, error: "Логін та пароль обов'язкові" });
     const hash = await bcrypt.hash(password, 10);
     await db.execute({
       sql: "INSERT INTO users (username, password_hash) VALUES (?, ?)",
