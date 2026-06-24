@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Sky Camp — преміальний дитячий табір у Карпатах. Сайт-візитка з онлайн-бронюванням.",
   "private": true,
+  "type": "module",
   "scripts": {},
   "engines": {
     "node": ">=18.0.0"
