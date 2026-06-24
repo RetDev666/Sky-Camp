@@ -25,7 +25,7 @@ export async function loadStats() {
     }
   } catch (err) {
     if (err.message !== 'Unauthorized') {
-      showToast('Не вдалося завантажити статистику', 'error');
+      showToast(err.message || 'Не вдалося завантажити статистику', 'error');
     }
   }
 }

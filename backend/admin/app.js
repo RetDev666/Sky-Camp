@@ -62,7 +62,11 @@ export async function apiFetch(path, options = {}) {
     promptLogin('Сесія завершена. Увійдіть знову.');
     throw new Error('Unauthorized');
   }
-  return res.json();
+  const json = await res.json();
+  if (!res.ok || !json.ok) {
+    throw new Error(json.error || 'API Error');
+  }
+  return json;
 }
 
 /* ── Toast ─────────────────────────────────── */

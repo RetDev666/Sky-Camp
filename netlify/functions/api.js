@@ -220,7 +220,13 @@ app.get('/api/admin/bookings', adminAuth, async (req, res) => {
     }
     const countResult = await db.execute({ sql: countSql, args: countArgs });
     
-    res.json({ ok: true, bookings: result.rows, total: countResult.rows[0].n });
+    const bookings = result.rows.map(row => {
+      const obj = {};
+      result.columns.forEach((c, i) => obj[c] = row[i]);
+      return obj;
+    });
+    
+    res.json({ ok: true, bookings, total: countResult.rows[0].n });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
@@ -240,7 +246,13 @@ app.get('/api/admin/contacts', adminAuth, async (req, res) => {
       args: [Number(limit), (Number(page) - 1) * Number(limit)]
     });
     
-    res.json({ ok: true, contacts: result.rows });
+    const contacts = result.rows.map(row => {
+      const obj = {};
+      result.columns.forEach((c, i) => obj[c] = row[i]);
+      return obj;
+    });
+    
+    res.json({ ok: true, contacts });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
