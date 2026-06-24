@@ -270,6 +270,8 @@ app.get('/api/admin/setup-db', async (req, res) => {
     await db.execute("CREATE TABLE IF NOT EXISTS gallery (id INTEGER PRIMARY KEY AUTOINCREMENT, image_data TEXT)");
     await db.execute("CREATE TABLE IF NOT EXISTS shifts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, start_date TEXT, end_date TEXT)");
     try { await db.execute("ALTER TABLE bookings ADD COLUMN notes TEXT"); } catch (e) {}
+    try { await db.execute("ALTER TABLE shifts ADD COLUMN price INTEGER"); } catch (e) {}
+    try { await db.execute("ALTER TABLE shifts ADD COLUMN old_price INTEGER"); } catch (e) {}
     res.json({ ok: true, message: "DB updated" });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
@@ -283,7 +285,7 @@ app.get('/api/public/content', async (req, res) => {
     const [s, g, sh] = await Promise.all([
       db.execute("SELECT key, value FROM settings"),
       db.execute("SELECT image_data FROM gallery ORDER BY id DESC"),
-      db.execute("SELECT id, name, start_date, end_date FROM shifts ORDER BY id ASC")
+      db.execute("SELECT id, name, start_date, end_date, price, old_price FROM shifts ORDER BY id ASC")
     ]);
     const settings = {};
     s.rows.forEach(r => { settings[r[0]] = r[1]; });
@@ -368,7 +370,7 @@ app.delete('/api/admin/gallery/:id', adminAuth, async (req, res) => {
 app.get('/api/admin/shifts', adminAuth, async (req, res) => {
   try {
     const db = getDb();
-    const result = await db.execute("SELECT id, name, start_date, end_date FROM shifts ORDER BY id ASC");
+    const result = await db.execute("SELECT id, name, start_date, end_date, price, old_price FROM shifts ORDER BY id ASC");
     const shifts = result.rows.map(row => {
       const obj = {};
       result.columns.forEach((c, i) => obj[c] = row[i]);
@@ -383,10 +385,10 @@ app.get('/api/admin/shifts', adminAuth, async (req, res) => {
 app.post('/api/admin/shifts', adminAuth, async (req, res) => {
   try {
     const db = getDb();
-    const { name, start_date, end_date } = req.body;
+    const { name, start_date, end_date, price, old_price } = req.body;
     await db.execute({ 
-      sql: "INSERT INTO shifts (name, start_date, end_date) VALUES (?, ?, ?)", 
-      args: [name, start_date, end_date] 
+      sql: "INSERT INTO shifts (name, start_date, end_date, price, old_price) VALUES (?, ?, ?, ?, ?)", 
+      args: [name, start_date, end_date, price || 0, old_price || null] 
     });
     res.json({ ok: true });
   } catch (err) {

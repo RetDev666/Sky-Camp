@@ -329,6 +329,8 @@
               <th>Назва зміни</th>
               <th>Дата початку</th>
               <th>Дата кінця</th>
+              <th>Ціна</th>
+              <th>Стара ціна</th>
               <th>Дії</th>
             </tr>
           </thead>
@@ -399,6 +401,14 @@
         <div class="input-group">
           <label>Дата кінця</label>
           <input type="date" id="new-shift-end" required>
+        </div>
+        <div class="input-group">
+          <label>Актуальна ціна (₴)</label>
+          <input type="number" id="new-shift-price" placeholder="напр. 28500" required>
+        </div>
+        <div class="input-group">
+          <label>Стара ціна (₴) [необов'язково]</label>
+          <input type="number" id="new-shift-old-price" placeholder="напр. 31000">
         </div>
         <button type="submit" class="btn btn-primary" style="justify-content:center">Зберегти</button>
       </form>

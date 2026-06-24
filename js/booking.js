@@ -18,17 +18,24 @@
       PROGRAMS[String(s.id)] = {
         name: s.name,
         dates: `${s.start_date} — ${s.end_date}`,
-        price: 28500, // Default base price if not managed in CMS
-        oldPrice: null
+        price: s.price || 28500,
+        oldPrice: s.old_price || null
       };
       
       const isActive = index === 0 ? 'active' : '';
+      const priceText = PROGRAMS[String(s.id)].price.toLocaleString('uk-UA');
+      const oldPriceHtml = s.old_price ? `<span class="shift-price-old">₴${s.old_price.toLocaleString('uk-UA')}</span>` : '';
+      
       return `
         <div class="shift-card ${isActive}" data-animate data-shift="${s.id}" onclick="selectShift(${s.id})">
           <div class="shift-radio"></div>
           <div class="shift-info">
             <p class="shift-name">${s.name}</p>
             <p class="shift-dates"><span class="material-symbols-outlined">event</span>${s.start_date} — ${s.end_date}</p>
+          </div>
+          <div style="text-align: right">
+            ${oldPriceHtml}
+            <div class="shift-price-tag">₴${priceText}</div>
           </div>
         </div>
       `;
