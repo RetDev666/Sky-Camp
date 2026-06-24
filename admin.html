@@ -70,6 +70,11 @@
       
       <hr class="nav-divider"/>
       
+      <div class="nav-item" data-section="shifts"
+           onclick="Admin.showSection('shifts')" role="button" tabindex="0">
+        <span class="material-symbols-outlined">event</span>
+        Дати заїздів (Зміни)
+      </div>
       <div class="nav-item" data-section="gallery"
            onclick="Admin.showSection('gallery')" role="button" tabindex="0">
         <span class="material-symbols-outlined">collections</span>
@@ -308,6 +313,30 @@
       </div>
     </section>
 
+    <!-- ── Shifts ──────────────────────────── -->
+    <section id="section-shifts" style="display:none" aria-label="Зміни">
+      <div class="page-header">
+        <h1 class="page-title">📅 Дати заїздів (Зміни)</h1>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('shift-modal').classList.remove('hidden')">
+          <span class="material-symbols-outlined">add</span> Додати зміну
+        </button>
+      </div>
+      <div class="table-card">
+        <table role="grid">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Назва зміни</th>
+              <th>Дата початку</th>
+              <th>Дата кінця</th>
+              <th>Дії</th>
+            </tr>
+          </thead>
+          <tbody id="shifts-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -349,6 +378,34 @@
   </div>
 </div>
 
+<!-- ══ SHIFT MODAL ═════════════════════════════ -->
+<div class="modal-overlay hidden" id="shift-modal" role="dialog"
+     onclick="if(event.target===this) this.classList.add('hidden')">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head">
+      <h3>Нова зміна</h3>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('shift-modal').classList.add('hidden')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="new-shift-form" style="display:flex; flex-direction:column; gap:16px;">
+        <div class="input-group">
+          <label>Назва зміни</label>
+          <input type="text" id="new-shift-name" placeholder="напр. Перша зміна" required>
+        </div>
+        <div class="input-group">
+          <label>Дата початку</label>
+          <input type="date" id="new-shift-start" required>
+        </div>
+        <div class="input-group">
+          <label>Дата кінця</label>
+          <input type="date" id="new-shift-end" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="justify-content:center">Зберегти</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ══ SCRIPTS ══════════════════════════════════ -->
 <script type="module" src="backend/admin/app.js"></script>
 <script type="module">
@@ -358,6 +415,7 @@
   import { uploadGalleryImage, deleteGalleryImage } from '/backend/admin/gallery.js';
   import { saveSettings } from '/backend/admin/settings.js';
   import { deleteUser } from '/backend/admin/users.js';
+  import { deleteShift } from '/backend/admin/shifts.js';
 
   // Expose CMS functions to window for onclick handlers
   window.filterBookings = filterBookings;
@@ -369,6 +427,7 @@
   window.deleteGalleryImage = deleteGalleryImage;
   window.saveSettings = saveSettings;
   window.deleteUser = deleteUser;
+  window.deleteShift = deleteShift;
 
   loadStats();
 

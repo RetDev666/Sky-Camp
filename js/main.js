@@ -185,6 +185,11 @@
           `).join('');
         }
       }
+
+      // Shifts
+      if (data.shifts && window.initShifts) {
+        window.initShifts(data.shifts);
+      }
     })
     .catch(err => console.error('CMS Load Error:', err));
 

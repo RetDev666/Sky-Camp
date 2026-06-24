@@ -144,7 +144,7 @@ export function statusBadge(status) {
 /* ── Navigation ────────────────────────────── */
 export function showSection(name) {
   State.currentSection = name;
-  const sections = ['dashboard', 'bookings', 'contacts', 'gallery', 'settings', 'users'];
+  const sections = ['dashboard', 'bookings', 'contacts', 'gallery', 'settings', 'users', 'shifts'];
 
   sections.forEach(s => {
     const el = document.getElementById(`section-${s}`);
@@ -161,6 +161,7 @@ export function showSection(name) {
   if (name === 'gallery')   import('./gallery.js').then(m => m.loadGallery());
   if (name === 'settings')  import('./settings.js').then(m => m.loadSettings());
   if (name === 'users')     import('./users.js').then(m => m.loadUsers());
+  if (name === 'shifts')    import('./shifts.js').then(m => m.loadShifts());
 }
 
 /* ── Expose to global for HTML onclick attrs ─ */

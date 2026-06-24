@@ -5,10 +5,37 @@
   'use strict';
 
   /* ─── Program Data ───────────────────────── */
-  const PROGRAMS = {
-    '1': { name: 'Літня пригода в дикій природі', dates: '5 черв — 19 черв', price: 28500, oldPrice: 31000 },
-    '2': { name: 'Майстри вершин',                dates: '10 лип — 24 лип',  price: 31000, oldPrice: null  },
-    '3': { name: 'Осіннє відкриття',              dates: '2 серп — 16 серп', price: 26000, oldPrice: 28000 },
+  let PROGRAMS = {};
+  
+  window.initShifts = function(shifts) {
+    if (!shifts || shifts.length === 0) {
+      document.getElementById('shift-cards').innerHTML = '<p style="padding:20px;text-align:center;color:var(--outline)">Наразі немає доступних змін.</p>';
+      return;
+    }
+    
+    PROGRAMS = {};
+    const cardsHtml = shifts.map((s, index) => {
+      PROGRAMS[String(s.id)] = {
+        name: s.name,
+        dates: `${s.start_date} — ${s.end_date}`,
+        price: 28500, // Default base price if not managed in CMS
+        oldPrice: null
+      };
+      
+      const isActive = index === 0 ? 'active' : '';
+      return `
+        <div class="shift-card ${isActive}" data-animate data-shift="${s.id}" onclick="selectShift(${s.id})">
+          <div class="shift-radio"></div>
+          <div class="shift-info">
+            <p class="shift-name">${s.name}</p>
+            <p class="shift-dates"><span class="material-symbols-outlined">event</span>${s.start_date} — ${s.end_date}</p>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    document.getElementById('shift-cards').innerHTML = cardsHtml;
+    selectShift(shifts[0].id);
   };
 
   let currentStep  = 0;

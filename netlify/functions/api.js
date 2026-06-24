@@ -267,6 +267,7 @@ app.get('/api/admin/setup-db', async (req, res) => {
   try {
     await db.execute("CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)");
     await db.execute("CREATE TABLE IF NOT EXISTS gallery (id INTEGER PRIMARY KEY AUTOINCREMENT, image_data TEXT)");
+    await db.execute("CREATE TABLE IF NOT EXISTS shifts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, start_date TEXT, end_date TEXT)");
     try { await db.execute("ALTER TABLE bookings ADD COLUMN notes TEXT"); } catch (e) {}
     res.json({ ok: true, message: "DB updated" });
   } catch (err) {
@@ -277,14 +278,20 @@ app.get('/api/admin/setup-db', async (req, res) => {
 // --- PUBLIC CONTENT ---
 app.get('/api/public/content', async (req, res) => {
   try {
-    const [s, g] = await Promise.all([
+    const [s, g, sh] = await Promise.all([
       db.execute("SELECT key, value FROM settings"),
-      db.execute("SELECT image_data FROM gallery ORDER BY id DESC")
+      db.execute("SELECT image_data FROM gallery ORDER BY id DESC"),
+      db.execute("SELECT id, name, start_date, end_date FROM shifts ORDER BY id ASC")
     ]);
     const settings = {};
     s.rows.forEach(r => { settings[r[0]] = r[1]; });
     const gallery = g.rows.map(r => r[0]);
-    res.json({ ok: true, settings, gallery });
+    const shifts = sh.rows.map(r => {
+      const obj = {};
+      sh.columns.forEach((c, i) => obj[c] = r[i]);
+      return obj;
+    });
+    res.json({ ok: true, settings, gallery, shifts });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
@@ -344,6 +351,43 @@ app.post('/api/admin/gallery', adminAuth, async (req, res) => {
 app.delete('/api/admin/gallery/:id', adminAuth, async (req, res) => {
   try {
     await db.execute({ sql: "DELETE FROM gallery WHERE id = ?", args: [req.params.id] });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// --- SHIFTS ---
+app.get('/api/admin/shifts', adminAuth, async (req, res) => {
+  try {
+    const result = await db.execute("SELECT id, name, start_date, end_date FROM shifts ORDER BY id ASC");
+    const shifts = result.rows.map(row => {
+      const obj = {};
+      result.columns.forEach((c, i) => obj[c] = row[i]);
+      return obj;
+    });
+    res.json({ ok: true, shifts });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/shifts', adminAuth, async (req, res) => {
+  try {
+    const { name, start_date, end_date } = req.body;
+    await db.execute({ 
+      sql: "INSERT INTO shifts (name, start_date, end_date) VALUES (?, ?, ?)", 
+      args: [name, start_date, end_date] 
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.delete('/api/admin/shifts/:id', adminAuth, async (req, res) => {
+  try {
+    await db.execute({ sql: "DELETE FROM shifts WHERE id = ?", args: [req.params.id] });
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
