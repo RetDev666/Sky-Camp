@@ -1,0 +1,458 @@
+/* =============================================
+   Sky Camp — Responsive & Mobile Styles
+   Mobile-first: base = mobile, then scale up
+   ============================================= */
+
+/* ─── Typography scale ─────────────────────── */
+:root {
+  --text-h1: clamp(1.75rem, 5vw, 3rem);
+  --text-h2: clamp(1.375rem, 3.5vw, 2rem);
+  --text-h3: clamp(1.125rem, 2.5vw, 1.375rem);
+  --text-body-lg: clamp(1rem, 1.5vw, 1.125rem);
+  --text-body-md: clamp(0.9375rem, 1.2vw, 1rem);
+  --gutter: clamp(16px, 4vw, 32px);
+}
+
+/* ─── Spacing helpers ──────────────────────── */
+@media (max-width: 639px) {
+  .section {
+    padding-block: var(--space-xl);
+  }
+
+  .section-header {
+    margin-bottom: var(--space-xl);
+  }
+
+  h1,
+  .text-h1 {
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  h2,
+  .text-h2 {
+    line-height: 1.2;
+  }
+}
+
+/* ─── Hero ─────────────────────────────────── */
+@media (max-width: 1023px) {
+  .hero-inner {
+    text-align: center;
+  }
+
+  .hero-text {
+    align-items: center;
+  }
+
+  .hero-actions {
+    justify-content: center;
+  }
+
+  .hero-desc {
+    max-width: 100%;
+  }
+
+  .hero-image {
+    max-height: 280px;
+    border-radius: var(--radius-xl);
+  }
+}
+
+@media (max-width: 639px) {
+  .hero-inner {
+    padding-top: var(--space-xl);
+    padding-bottom: var(--space-xl);
+  }
+
+  .hero-image {
+    max-height: 220px;
+  }
+}
+
+/* ─── Features ─────────────────────────────── */
+@media (max-width: 639px) {
+  .feature-card {
+    padding: var(--space-lg);
+  }
+
+  .feature-icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .feature-content-row {
+    align-items: flex-start;
+  }
+
+  .feature-image-thumb {
+    max-width: 100%;
+    height: 180px;
+  }
+}
+
+/* ─── Safety badges ────────────────────────── */
+@media (max-width: 639px) {
+  .safety-grid {
+    gap: var(--space-lg);
+  }
+
+  .safety-icon {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+/* ─── Nutrition section ────────────────────── */
+@media (max-width: 1023px) {
+  .nutrition-inner {
+    gap: var(--space-xl);
+  }
+
+  .nutrition-image {
+    max-height: 280px;
+    border-radius: var(--radius-xl);
+  }
+}
+
+/* ─── CTA Banner ───────────────────────────── */
+@media (max-width: 639px) {
+  .cta-banner-content {
+    padding-block: var(--space-xxl);
+    gap: var(--space-lg);
+  }
+
+  .btn-cta-white {
+    width: 100%;
+    justify-content: center;
+    font-size: 16px;
+  }
+}
+
+/* ─── Programs page ────────────────────────── */
+@media (max-width: 639px) {
+  .programs-hero {
+    padding-block: var(--space-xl);
+  }
+
+  .prog-card-body {
+    padding: var(--space-lg);
+  }
+
+  .shift-card {
+    padding: var(--space-md);
+    gap: var(--space-sm);
+  }
+
+  .shift-price-tag {
+    font-size: 17px;
+  }
+}
+
+@media (max-width: 1023px) {
+  .prog-card-featured {
+    flex-direction: column;
+  }
+
+  .prog-card-img {
+    width: 100%;
+  }
+
+  .prog-card-img img {
+    height: 240px;
+  }
+}
+
+/* ─── Gallery page ─────────────────────────── */
+@media (max-width: 767px) {
+  .gallery-bento {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 180px;
+  }
+
+  .gallery-bento .bento-tall {
+    grid-row: span 1;
+  }
+
+  .gallery-bento .bento-wide {
+    grid-column: span 2;
+  }
+
+  .lightbox-img {
+    max-height: 85vw;
+  }
+}
+
+@media (max-width: 479px) {
+  .gallery-bento {
+    grid-template-columns: 1fr;
+    grid-auto-rows: 220px;
+  }
+
+  .gallery-bento .bento-wide {
+    grid-column: span 1;
+  }
+}
+
+/* ─── FAQ page ─────────────────────────────── */
+@media (max-width: 639px) {
+  .accordion-header {
+    padding: var(--space-md) var(--space-lg);
+  }
+
+  .accordion-question {
+    font-size: 15px;
+  }
+
+  .accordion-body p {
+    padding: 0 var(--space-lg) var(--space-lg);
+  }
+}
+
+/* ─── Team page ────────────────────────────── */
+@media (max-width: 767px) {
+  .team-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 479px) {
+  .team-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─── Terms page ───────────────────────────── */
+@media (max-width: 767px) {
+  .terms-bento {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-table {
+    font-size: 13px;
+  }
+
+  .schedule-table th,
+  .schedule-table td {
+    padding: var(--space-sm);
+  }
+}
+
+/* ─── Booking page ─────────────────────────── */
+@media (max-width: 1023px) {
+  /* Sidebar moves below form on mobile */
+  .booking-inner {
+    grid-template-columns: 1fr;
+  }
+
+  #summary-sidebar {
+    order: -1; /* Show price summary above form */
+  }
+
+  .summary-panel {
+    border-radius: var(--radius-xl);
+  }
+
+  .summary-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-lg);
+    align-items: flex-start;
+  }
+
+  .summary-program {
+    flex: 1;
+    min-width: 140px;
+    margin-bottom: 0;
+  }
+
+  .summary-lines-group {
+    display: none; /* hide detailed lines on mobile, show only total */
+  }
+
+  .summary-total {
+    width: 100%;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .summary-ssl {
+    display: none; /* save space on mobile */
+  }
+}
+
+@media (max-width: 639px) {
+  .booking-inner {
+    padding-block: var(--space-lg);
+    gap: var(--space-md);
+  }
+
+  .booking-header {
+    padding-block: var(--space-sm) var(--space-md);
+  }
+
+  /* Compact stepper on mobile */
+  .stepper {
+    gap: 2px;
+  }
+
+  .step-label {
+    font-size: 11px;
+  }
+
+  .step-num {
+    width: 30px;
+    height: 30px;
+    font-size: 13px;
+  }
+
+  .step-line {
+    min-width: 12px;
+  }
+
+  .booking-title {
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+    margin-bottom: var(--space-md);
+  }
+
+  /* Compact form cards */
+  .form-card {
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+  }
+
+  .form-card-header {
+    margin-bottom: var(--space-lg);
+  }
+
+  .form-card-icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr; /* always stack on mobile */
+  }
+
+  .age-chips {
+    gap: var(--space-xs);
+  }
+
+  .age-chip {
+    padding: 8px var(--space-md);
+    font-size: 13px;
+  }
+
+  /* Shift cards: compact */
+  .shift-card {
+    flex-wrap: wrap;
+  }
+
+  .shift-info {
+    min-width: 0;
+  }
+
+  /* Step nav: stack buttons full-width on very small */
+  .step-nav {
+    flex-direction: column-reverse;
+    gap: var(--space-sm);
+  }
+
+  .step-nav .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .step-nav.end {
+    flex-direction: column;
+  }
+
+  /* Success screen */
+  .success-icon-wrap {
+    width: 72px;
+    height: 72px;
+  }
+
+  .success-title {
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
+  }
+}
+
+/* ─── Navigation mobile overrides ─────────── */
+@media (max-width: 767px) {
+  .navbar-brand .brand-name {
+    font-size: 19px;
+  }
+
+  /* Bottom nav label size */
+  .bottom-nav-item {
+    font-size: 9px;
+  }
+}
+
+/* ─── Footer mobile ────────────────────────── */
+@media (max-width: 639px) {
+  .footer-inner {
+    padding: var(--space-xxl) var(--gutter) var(--space-lg);
+    gap: var(--space-lg);
+  }
+
+  .footer-bottom {
+    padding: var(--space-md) var(--gutter);
+    font-size: 12px;
+  }
+}
+
+/* ─── General touch targets ─────────────────── */
+@media (max-width: 767px) {
+  /* Minimum 44×44px touch targets */
+  .btn {
+    min-height: 44px;
+  }
+
+  .nav-link,
+  .mobile-nav-link {
+    min-height: 44px;
+  }
+
+  .accordion-header {
+    min-height: 56px;
+  }
+
+  /* Better tap area for chips */
+  .age-chip {
+    min-height: 40px;
+  }
+
+  /* Inputs: comfortable font size prevents iOS zoom */
+  .input,
+  input,
+  select,
+  textarea {
+    font-size: 16px !important; /* prevents iOS auto-zoom on focus */
+  }
+}
+
+/* ─── Landscape phone ─────────────────────── */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero-inner {
+    padding-top: var(--space-lg);
+    padding-bottom: var(--space-lg);
+  }
+
+  .hero-image {
+    display: none;
+  }
+}
+
+/* ─── Large screens ───────────────────────── */
+@media (min-width: 1440px) {
+  :root {
+    --gutter: 48px;
+  }
+
+  .hero-inner {
+    padding-block: 100px;
+  }
+}

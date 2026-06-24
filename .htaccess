@@ -1,0 +1,116 @@
+# ══════════════════════════════════════════════════
+#  Sky Camp — Apache .htaccess
+#  Для shared hosting (NIC.UA / DirectAdmin / cPanel)
+# ══════════════════════════════════════════════════
+
+Options -Indexes
+ServerSignature Off
+
+# ── Кодування та стандартний файл ────────────────
+AddDefaultCharset UTF-8
+DirectoryIndex index.html index.php
+
+# ── Захист системних файлів ───────────────────────
+<FilesMatch "^\.(env|git|gitignore|htpasswd|DS_Store)">
+    Require all denied
+</FilesMatch>
+<FilesMatch "(composer\.(json|lock)|package(-lock)?\.json|README\.md|Dockerfile|\.dockerignore|ecosystem\.config\.js|render\.yaml)$">
+    Require all denied
+</FilesMatch>
+# Блокуємо доступ до backend/
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^backend/ - [F,L]
+    RewriteRule ^logs/ - [F,L]
+    RewriteRule ^node_modules/ - [F,L]
+</IfModule>
+
+# ── HTTPS примусово ────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTPS} off
+    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ── www → без www ───────────────────────────────────
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{HTTP_HOST} ^www\.sky-camp\.pp\.ua$ [NC]
+    RewriteRule ^ https://sky-camp.pp.ua%{REQUEST_URI} [L,R=301]
+</IfModule>
+
+# ── Кешування статичних ресурсів ──────────────────
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/html                 "access plus 0 seconds"
+    ExpiresByType text/css                  "access plus 1 year"
+    ExpiresByType application/javascript    "access plus 1 year"
+    ExpiresByType image/png                 "access plus 1 year"
+    ExpiresByType image/jpeg                "access plus 1 year"
+    ExpiresByType image/gif                 "access plus 1 year"
+    ExpiresByType image/svg+xml             "access plus 1 year"
+    ExpiresByType image/webp                "access plus 1 year"
+    ExpiresByType image/avif                "access plus 1 year"
+    ExpiresByType image/x-icon              "access plus 1 year"
+    ExpiresByType application/json          "access plus 0 seconds"
+    ExpiresByType application/manifest+json "access plus 1 week"
+    ExpiresByType font/woff2                "access plus 1 year"
+    ExpiresByType font/woff                 "access plus 1 year"
+</IfModule>
+
+# Cache-Control заголовки
+<IfModule mod_headers.c>
+    # HTML — не кешувати (завжди свіжий)
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "no-cache, must-revalidate"
+    </FilesMatch>
+    # JS/CSS — кешувати на 1 годину (поки йде налаштування сайту)
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "public, max-age=3600"
+    </FilesMatch>
+    # Зображення
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|avif|svg|ico)$">
+        Header set Cache-Control "public, max-age=31536000"
+    </FilesMatch>
+    # Шрифти
+    <FilesMatch "\.(woff|woff2|ttf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, immutable"
+        Header set Access-Control-Allow-Origin "*"
+    </FilesMatch>
+</IfModule>
+
+# ── Gzip компресія ────────────────────────────────
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE application/manifest+json
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/xml
+</IfModule>
+
+# ── Безпека: HTTP-заголовки ───────────────────────
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set Permissions-Policy "camera=(), microphone=(), geolocation=()"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self'; frame-ancestors 'none'"
+</IfModule>
+
+# ── Кастомні сторінки помилок ─────────────────────
+ErrorDocument 404 /404.html
+ErrorDocument 403 /index.html
+ErrorDocument 500 /index.html
+
+# ── MIME-типи ─────────────────────────────────────
+<IfModule mod_mime.c>
+    AddType application/manifest+json    .webmanifest .json
+    AddType image/webp                   .webp
+    AddType image/avif                   .avif
+    AddType font/woff2                   .woff2
+    AddType font/woff                    .woff
+</IfModule>

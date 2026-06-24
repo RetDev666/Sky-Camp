@@ -1,0 +1,541 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+  <!-- Primary SEO -->
+  <title>Забронювати місце — Sky Camp 2026 | Реєстрація онлайн</title>
+  <meta name="description" content="Забронюйте місце у Sky Camp 2026 онлайн за 3 хвилини. Оберіть зміну, заповніть дані дитини та отримайте підтвердження миттєво."/>
+  <meta name="keywords" content="дитячий табір, sky camp, карпати, літній табір, пригоди для дітей, бронювання табору"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+  <meta name="apple-mobile-web-app-title" content="Sky Camp"/>
+  <meta name="robots" content="index, follow"/>
+  <link rel="canonical" href="https://sky-camp.pp.ua/booking.html"/>
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website"/>
+  <meta property="og:site_name" content="Sky Camp"/>
+  <meta property="og:title" content="Забронювати місце — Sky Camp 2026 | Реєстрація онлайн"/>
+  <meta property="og:description" content="Забронюйте місце у Sky Camp 2026 онлайн за 3 хвилини. Оберіть зміну, заповніть дані дитини та отримайте підтвердження миттєво."/>
+  <meta property="og:url" content="https://sky-camp.pp.ua/booking.html"/>
+  <meta property="og:image" content="https://sky-camp.pp.ua/img/hero.jpg"/>
+  <meta property="og:locale" content="uk_UA"/>
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image"/>
+  <meta name="twitter:title" content="Забронювати місце — Sky Camp 2026 | Реєстрація онлайн"/>
+  <meta name="twitter:description" content="Забронюйте місце у Sky Camp 2026 онлайн за 3 хвилини. Оберіть зміну, заповніть дані дитини та отримайте підтвердження миттєво."/>
+  <meta name="twitter:image" content="https://sky-camp.pp.ua/img/hero.jpg"/>
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='28'>🏕️</text></svg>"/>
+  <meta name="theme-color" content="#005daa"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/variables.css"/>
+  <link rel="stylesheet" href="css/global.css"/>
+  <link rel="stylesheet" href="css/navigation.css"/>
+  <link rel="stylesheet" href="css/home.css"/>
+  <link rel="stylesheet" href="css/booking.css"/>
+  <style>
+    [hidden] { display: none !important; }
+
+    .booking-header {
+      position: sticky;
+      top: var(--nav-height);
+      background: var(--surface-container-low);
+      z-index: 10;
+      padding-block: var(--space-md);
+      margin-bottom: var(--space-lg);
+      border-bottom: 1px solid var(--outline-variant);
+    }
+
+    /* Program shift cards */
+    .shift-cards { display: flex; flex-direction: column; gap: var(--space-md); }
+    .shift-card {
+      border: 2px solid var(--outline-variant);
+      border-radius: var(--radius-xl);
+      padding: var(--space-lg);
+      cursor: pointer;
+      transition: all var(--transition-base);
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      background: var(--surface-container-lowest);
+    }
+    .shift-card:hover { border-color: var(--primary); background: rgba(0,93,170,0.03); }
+    .shift-card.active {
+      border-color: var(--primary);
+      background: rgba(0,93,170,0.06);
+      box-shadow: 0 0 0 4px rgba(0,93,170,0.10);
+    }
+    .shift-radio { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--outline-variant); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all var(--transition-base); }
+    .shift-card.active .shift-radio { border-color: var(--primary); background: var(--primary); }
+    .shift-card.active .shift-radio::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: white; }
+    .shift-info { flex: 1; }
+    .shift-name { font-size: var(--text-body-md); font-weight: var(--fw-semibold); color: var(--on-surface); margin-bottom: 4px; }
+    .shift-dates { font-size: var(--text-label-sm); color: var(--outline); display: flex; align-items: center; gap: 4px; }
+    .shift-dates .material-symbols-outlined { font-size: 14px; }
+    .shift-price-tag {
+      font-size: 20px;
+      font-weight: var(--fw-extrabold);
+      color: var(--primary);
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+    .shift-price-old { font-size: 12px; color: var(--outline); text-decoration: line-through; display: block; text-align: right; }
+
+    /* Price flash animation */
+    @keyframes priceFlash { 0%{transform:scale(1.15);color:#16a34a} 100%{transform:scale(1);color:var(--primary)} }
+    .price-flash { animation: priceFlash 0.4s ease; }
+
+    /* Medical card */
+    .medical-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      cursor: pointer; padding: var(--space-sm) 0;
+    }
+    .medical-toggle-label { font-size: var(--text-label-md); font-weight: var(--fw-medium); color: var(--on-surface); }
+    .toggle-switch {
+      width: 44px; height: 24px; border-radius: var(--radius-full);
+      background: var(--outline-variant); position: relative;
+      transition: background var(--transition-base); flex-shrink: 0;
+    }
+    .toggle-switch::after {
+      content: ''; position: absolute;
+      width: 18px; height: 18px; border-radius: 50%;
+      background: white; top: 3px; left: 3px;
+      transition: transform var(--transition-base);
+      box-shadow: 0 1px 4px rgba(0,0,0,.2);
+    }
+    .toggle-switch.on { background: var(--primary); }
+    .toggle-switch.on::after { transform: translateX(20px); }
+    .medical-fields { display: flex; flex-direction: column; gap: var(--space-md); margin-top: var(--space-md); }
+    .medical-fields[hidden] { display: none !important; }
+  </style>
+  <link rel="stylesheet" href="css/responsive.css"/>
+  <link rel="stylesheet" href="css/animations.css"/>
+  <link rel="stylesheet" href="/css/cookie-consent.css"/>
+  </head>
+<body class="page-layout">
+
+  <header class="navbar">
+    <div class="navbar-inner">
+      <a href="index.html" class="navbar-brand" aria-label="Sky Camp"><span class="brand-name">Sky Camp</span></a>
+      <div style="display:flex; gap:16px; align-items:center;">
+        
+        <a href="index.html" class="btn btn-text" style="display:flex;align-items:center;gap:4px">
+          <span class="material-symbols-outlined" style="font-size:20px">arrow_back</span>
+          <span class="show-desktop" style="font-size:14px">Головна</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-content booking-page">
+    <div class="container booking-inner" style="padding-bottom:var(--space-xxl)">
+
+      <!-- Main Column -->
+      <div>
+        <div class="booking-header" id="booking-header">
+          <h1 class="text-h1 booking-title">Завершення бронювання</h1>
+          <div class="stepper" id="stepper" aria-label="Кроки бронювання">
+            <div class="step-indicator active" data-step="0">
+              <div class="step-num">1</div>
+              <span class="step-label">Програма</span>
+            </div>
+            <div class="step-line" id="line-1"></div>
+            <div class="step-indicator" data-step="1">
+              <div class="step-num">2</div>
+              <span class="step-label">Учасник</span>
+            </div>
+            <div class="step-line" id="line-2"></div>
+            <div class="step-indicator" data-step="2">
+              <div class="step-num">3</div>
+              <span class="step-label">Перевірка</span>
+            </div>
+          </div>
+        </div>
+
+        <div id="booking-stepper">
+
+          <!-- STEP 1: Program -->
+          <div id="step-panel-0" class="step-panel booking-form">
+            <div class="form-card" data-animate>
+              <div class="form-card-header" data-animate>
+                <div class="form-card-icon" data-animate><span class="material-symbols-outlined fill">explore</span></div>
+                <h2 class="text-h3 color-on-surface">Оберіть зміну табору</h2>
+              </div>
+              <div class="shift-cards" id="shift-cards">
+
+                <div class="shift-card active" data-animate data-shift="1" onclick="selectShift(1)">
+                  <div class="shift-radio"></div>
+                  <div class="shift-info">
+                    <p class="shift-name">Літня пригода в дикій природі</p>
+                    <p class="shift-dates"><span class="material-symbols-outlined">event</span>5 черв — 19 черв &nbsp;·&nbsp; 14 днів</p>
+                  </div>
+                  <div>
+                    <span class="shift-price-old">₴31 000</span>
+                    <span class="shift-price-tag">₴28 500</span>
+                  </div>
+                </div>
+
+                <div class="shift-card" data-animate data-shift="2" onclick="selectShift(2)">
+                  <div class="shift-radio"></div>
+                  <div class="shift-info">
+                    <p class="shift-name">Майстри вершин</p>
+                    <p class="shift-dates"><span class="material-symbols-outlined">event</span>10 лип — 24 лип &nbsp;·&nbsp; 14 днів</p>
+                  </div>
+                  <div>
+                    <span class="shift-price-old">&nbsp;</span>
+                    <span class="shift-price-tag">₴31 000</span>
+                  </div>
+                </div>
+
+                <div class="shift-card" data-animate data-shift="3" onclick="selectShift(3)">
+                  <div class="shift-radio"></div>
+                  <div class="shift-info">
+                    <p class="shift-name">Осіннє відкриття</p>
+                    <p class="shift-dates"><span class="material-symbols-outlined">event</span>2 серп — 16 серп &nbsp;·&nbsp; 14 днів</p>
+                  </div>
+                  <div>
+                    <span class="shift-price-old">₴28 000</span>
+                    <span class="shift-price-tag">₴26 000</span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <!-- What's included -->
+            <div class="form-card" data-animate style="background:var(--surface-container-low)">
+              <p style="font-size:var(--text-label-sm);font-weight:var(--fw-semibold);color:var(--outline);letter-spacing:.06em;text-transform:uppercase;margin-bottom:var(--space-md)">Включено у вартість</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--space-sm)">
+                <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--on-surface-variant)">
+                  <span class="material-symbols-outlined fill" style="font-size:18px;color:#16a34a">check_circle</span>Проживання
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--on-surface-variant)">
+                  <span class="material-symbols-outlined fill" style="font-size:18px;color:#16a34a">check_circle</span>5-разове харчування
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--on-surface-variant)">
+                  <span class="material-symbols-outlined fill" style="font-size:18px;color:#16a34a">check_circle</span>Страхування
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--on-surface-variant)">
+                  <span class="material-symbols-outlined fill" style="font-size:18px;color:#16a34a">check_circle</span>Всі активності
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--on-surface-variant)">
+                  <span class="material-symbols-outlined fill" style="font-size:18px;color:#16a34a">check_circle</span>Трансфер
+                </div>
+                <div style="display:flex;align-items:center;gap:8px;font-size:14px;color:var(--on-surface-variant)">
+                  <span class="material-symbols-outlined fill" style="font-size:18px;color:#16a34a">check_circle</span>Медичний персонал
+                </div>
+              </div>
+            </div>
+            <div class="step-nav end">
+              <button class="btn btn-primary btn-lg btn-pill" onclick="goToStep(1)">
+                Далі <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 2: Participant -->
+          <div id="step-panel-1" class="step-panel booking-form" hidden>
+            <div class="form-card" data-animate>
+              <div class="form-card-header" data-animate>
+                <div class="form-card-icon" data-animate><span class="material-symbols-outlined fill">child_care</span></div>
+                <h2 class="text-h3 color-on-surface">Дані учасника</h2>
+              </div>
+              <div class="form-stack">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" for="child-first">Ім'я дитини *</label>
+                    <input class="input" id="child-first" type="text" placeholder="Олексій" autocomplete="given-name"/>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="child-last">Прізвище дитини *</label>
+                    <input class="input" id="child-last" type="text" placeholder="Коваленко" autocomplete="family-name"/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="child-dob">Дата народження *</label>
+                  <input class="input" id="child-dob" type="date" max="2020-01-01" min="2007-01-01"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Вікова група</label>
+                  <div class="age-chips">
+                    <button class="age-chip selected">5–7 років</button>
+                    <button class="age-chip">8–10 років</button>
+                    <button class="age-chip">11–13 років</button>
+                    <button class="age-chip">14–17 років</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Medical info card -->
+            <div class="form-card" data-animate>
+              <div class="form-card-header" data-animate>
+                <div class="form-card-icon" data-animate style="background:var(--error-container);color:var(--error)">
+                  <span class="material-symbols-outlined fill">medical_services</span>
+                </div>
+                <h2 class="text-h3 color-on-surface">Медична інформація</h2>
+              </div>
+              <div class="form-stack">
+                <div class="form-group">
+                  <label class="form-label" for="med-allergies">Алергії (харчові, медикаментозні, інші)</label>
+                  <input class="input" id="med-allergies" type="text" placeholder="Напр.: горіхи, пеніцилін — або «немає»"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="med-conditions">Хронічні захворювання / протипоказання</label>
+                  <textarea class="input" id="med-conditions" rows="2" placeholder="Напр.: астма, діабет, обмеження фізичного навантаження — або «немає»" style="resize:vertical;height:auto"></textarea>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="med-medications">Постійні ліки (назва, дозування, час прийому)</label>
+                  <input class="input" id="med-medications" type="text" placeholder="Напр.: Метформін 500мг вранці — або «немає»"/>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Особливі дієтичні потреби</label>
+                  <div class="age-chips" id="diet-chips">
+                    <button class="age-chip" onclick="toggleDiet(this)">Немає</button>
+                    <button class="age-chip" onclick="toggleDiet(this)">Вегетаріанська</button>
+                    <button class="age-chip" onclick="toggleDiet(this)">Безглютенова</button>
+                    <button class="age-chip" onclick="toggleDiet(this)">Безлактозна</button>
+                    <button class="age-chip" onclick="toggleDiet(this)">Халяль</button>
+                  </div>
+                </div>
+                <div style="background:var(--error-container);border-radius:var(--radius-lg);padding:var(--space-sm) var(--space-md);display:flex;gap:8px;align-items:flex-start">
+                  <span class="material-symbols-outlined fill" style="color:var(--error);font-size:18px;flex-shrink:0;margin-top:2px">info</span>
+                  <p style="font-size:13px;color:var(--on-error-container)">Вся медична інформація є конфіденційною і використовується виключно для забезпечення безпеки та здоров'я вашої дитини під час перебування в таборі.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-card" data-animate>
+              <div class="form-card-header" data-animate>
+                <div class="form-card-icon" data-animate><span class="material-symbols-outlined fill">home</span></div>
+                <h2 class="text-h3 color-on-surface">Контакти батьків</h2>
+              </div>
+              <div class="form-stack">
+                <div class="form-group">
+                  <label class="form-label" for="parent-name">ПІБ батька/матері *</label>
+                  <input class="input" id="parent-name" type="text" placeholder="Коваленко Марія Іванівна" autocomplete="name"/>
+                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label class="form-label" for="parent-email">Електронна пошта *</label>
+                    <input class="input" id="parent-email" type="email" placeholder="batky@example.com" autocomplete="email"/>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" for="parent-phone">Номер телефону *</label>
+                    <input class="input" id="parent-phone" type="tel" placeholder="(050) 123-45-67" autocomplete="tel"/>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label" for="parent-phone2">Додатковий телефон (необов'язково)</label>
+                  <input class="input" id="parent-phone2" type="tel" placeholder="(067) 987-65-43" autocomplete="tel"/>
+                </div>
+              </div>
+            </div>
+            <div class="step-nav">
+              <button class="btn btn-secondary btn-lg btn-pill" onclick="goToStep(0)">
+                <span class="material-symbols-outlined">arrow_back</span> Назад
+              </button>
+              <button class="btn btn-primary btn-lg btn-pill" onclick="validateAndNext(2)">
+                Далі <span class="material-symbols-outlined">arrow_forward</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 3: Review -->
+          <div id="step-panel-2" class="step-panel booking-form" hidden>
+            <div class="form-card" data-animate>
+              <div class="form-card-header" data-animate>
+                <div class="form-card-icon" data-animate><span class="material-symbols-outlined fill">fact_check</span></div>
+                <h2 class="text-h3 color-on-surface">Перевірка замовлення</h2>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:var(--space-md)">
+                <p style="font-size:var(--text-label-sm);font-weight:var(--fw-semibold);color:var(--outline);letter-spacing:.06em;text-transform:uppercase">Програма та учасник</p>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Програма</p>
+                        <p class="date-value" id="review-program">—</p>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Дати</p>
+                        <p class="date-value" id="review-dates">—</p>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Учасник</p>
+                        <p class="date-value" id="review-name">—</p>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Дата народження</p>
+                        <p class="date-value" id="review-dob">—</p>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Вікова група</p>
+                        <p class="date-value" id="review-age">—</p>
+                    </div>
+                </div>
+                <p style="font-size:var(--text-label-sm);font-weight:var(--fw-semibold);color:var(--outline);letter-spacing:.06em;text-transform:uppercase;margin-top:var(--space-sm)">Контакти батьків</p>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">ПІБ батька/матері</p>
+                        <p class="date-value" id="review-parent">—</p>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Email</p>
+                        <p class="date-value" id="review-email">—</p>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Телефон</p>
+                        <p class="date-value" id="review-phone">—</p>
+                    </div>
+                </div>
+                <p style="font-size:var(--text-label-sm);font-weight:var(--fw-semibold);color:var(--outline);letter-spacing:.06em;text-transform:uppercase;margin-top:var(--space-sm)">Медична інформація</p>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Алергії</p>
+                        <p class="date-value" id="review-allergies">—</p>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Захворювання / протипоказання</p>
+                        <p class="date-value" id="review-conditions">—</p>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Ліки</p>
+                        <p class="date-value" id="review-medications">—</p>
+                    </div>
+                </div>
+                <div class="date-row">
+                    <div>
+                        <p class="date-label">Дієта</p>
+                        <p class="date-value" id="review-diet">—</p>
+                    </div>
+                </div>
+                <div class="date-row" style="border-top:2px solid rgba(0,93,170,.15);padding-top:var(--space-md);margin-top:var(--space-sm)">
+                  <div>
+                      <p class="date-label">До сплати</p>
+                      <p class="date-value" id="review-price" style="color:var(--primary);font-size:22px;font-weight:800">—</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="step-nav">
+              <button class="btn btn-secondary btn-lg btn-pill" onclick="goToStep(1)">
+                <span class="material-symbols-outlined">arrow_back</span> Назад
+              </button>
+              <button class="btn btn-primary btn-lg btn-pill" id="confirm-btn" onclick="confirmBooking()">
+                Підтвердити та оплатити <span class="material-symbols-outlined">payment</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- STEP 4: Success -->
+          <div id="step-panel-3" class="step-panel" hidden>
+            <div class="form-card success-screen" data-animate>
+              <div class="success-icon-wrap">
+                <span class="material-symbols-outlined">check</span>
+              </div>
+              <h2 class="success-title">Бронювання підтверджено!</h2>
+              <p class="success-subtitle">Дякуємо! Деталі надіслано на вашу електронну пошту. Очікуйте на зв'язок від нашої команди протягом 24 годин.</p>
+              <div class="success-booking-id">
+                Номер бронювання
+                <strong id="success-booking-num">#SKY-2026-0001</strong>
+              </div>
+              <div class="success-details">
+                <div class="success-detail-row">
+                  <span>Програма</span><span id="success-program">—</span>
+                </div>
+                <div class="success-detail-row">
+                  <span>Дати</span><span id="success-dates">—</span>
+                </div>
+                <div class="success-detail-row">
+                  <span>Учасник</span><span id="success-name">—</span>
+                </div>
+              </div>
+              <a href="index.html" class="btn btn-primary btn-lg btn-pill" style="margin-top:var(--space-md)">
+                <span class="material-symbols-outlined">home</span> На головну
+              </a>
+            </div>
+          </div>
+
+        </div><!-- /booking-stepper -->
+      </div><!-- /main col -->
+
+      <!-- Sidebar -->
+      <div id="summary-sidebar">
+        <div class="summary-panel">
+          <div class="summary-header">
+            <span class="material-symbols-outlined fill">receipt_long</span>
+            <h3>Ваше замовлення</h3>
+          </div>
+          <div class="summary-body">
+            <div class="summary-program">
+              <p class="summary-program-name" id="summary-program-name">Літня пригода в дикій природі</p>
+              <div class="summary-program-dates">
+                <span class="material-symbols-outlined">event</span>
+                <span id="summary-dates">5 черв — 19 черв</span>
+              </div>
+            </div>
+            <div class="summary-lines-group">
+              <div class="summary-line">
+                <span class="summary-line-label">Вартість путівки</span>
+                <span class="summary-line-value" id="summary-base">₴28 500</span>
+              </div>
+              <div class="summary-line">
+                <span class="summary-line-label">Страхування</span>
+                <span class="summary-line-value">Включено</span>
+              </div>
+              <div class="summary-line">
+                <span class="summary-line-label">Харчування</span>
+                <span class="summary-line-value">Включено</span>
+              </div>
+            </div>
+            <div class="summary-total">
+              <div>
+                <p class="summary-total-label">До сплати</p>
+                <p class="summary-total-price" id="summary-total">₴28 500</p>
+              </div>
+            </div>
+            <div class="summary-ssl">
+              <span class="material-symbols-outlined fill">lock</span>
+              <p>Безпечне бронювання з <strong>256-бітним SSL</strong>-шифруванням</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /booking-inner -->
+  </main>
+
+  <script src="js/main.js"></script>
+  <script src="js/telegram.js"></script>
+  <script src="js/booking.js"></script>
+  <script src="js/animations.js"></script>
+  <script src="/js/cookie-consent.js" defer></script>
+  <script>
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');
+  </script>
+</body>
+</html>

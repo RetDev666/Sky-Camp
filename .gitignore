@@ -1,0 +1,41 @@
+# Sky Camp — .gitignore
+
+# Dependencies
+node_modules/
+
+# Environment — НІКОЛИ не коммітити!
+backend/.env
+.env
+*.env.local
+
+# Database
+backend/data/
+*.db
+*.sqlite
+
+# Logs
+logs/
+*.log
+backend/logs/
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# Build artifacts
+dist/
+build/
+
+# Temp
+*.tmp
+*.temp
+.cache/
+
+# Local Netlify folder
+.netlify

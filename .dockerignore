@@ -1,0 +1,9 @@
+node_modules/
+backend/node_modules/
+backend/data/
+logs/
+.git/
+.env
+.idea/
+.vscode/
+*.md

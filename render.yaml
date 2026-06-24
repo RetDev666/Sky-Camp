@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: skycamp
+    env: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: ADMIN_USER
+        sync: false
+      - key: ADMIN_PASS
+        sync: false
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: DB_PATH
+        value: /var/data/skycamp.db
+    disk:
+      name: skycamp-data
+      mountPath: /var/data
+      sizeGB: 1

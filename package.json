@@ -1,0 +1,31 @@
+{
+  "name": "sky-camp",
+  "version": "1.0.0",
+  "description": "Sky Camp — преміальний дитячий табір у Карпатах. Сайт-візитка з онлайн-бронюванням.",
+  "private": true,
+  "scripts": {},
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "sky-camp",
+    "children-camp",
+    "carpathians",
+    "ukraine"
+  ],
+  "author": "Sky Camp Team",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@libsql/client": "^0.17.4",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.2",
+    "helmet": "^8.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "nodemailer": "^9.0.1",
+    "serverless-http": "^4.0.0",
+    "xss": "^1.0.15"
+  }
+}

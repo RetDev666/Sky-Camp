@@ -1,0 +1,17 @@
+﻿User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://sky-camp.pp.ua/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1
+
+# Block sensitive and system files
+Disallow: /node_modules/
+Disallow: /.git/
+Disallow: /backend/
+Disallow: /form.php
+Disallow: /.env
+Disallow: /package.json
+Disallow: /package-lock.json

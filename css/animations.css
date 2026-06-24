@@ -1,0 +1,242 @@
+/* =============================================
+   Sky Camp — Visual Effects & Animations CSS
+   ============================================= */
+
+/* ─── Scroll progress bar ────────────────── */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--primary) 0%, #38bdf8 100%);
+  z-index: 9999;
+  transition: width 0.1s linear;
+  border-radius: 0 2px 2px 0;
+  box-shadow: 0 0 8px rgba(0, 142, 255, 0.5);
+}
+
+/* ─── Hero wave ──────────────────────────── */
+.hero-wave {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  line-height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.hero-wave svg {
+  width: 100%;
+  height: 60px;
+  display: block;
+}
+.hero-section {
+  overflow: hidden;
+}
+.hero-inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* ─── Ping dot on CTA buttons ────────────── */
+@keyframes ping {
+  0%   { transform: scale(1);  opacity: 0.8; }
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+.ping-dot {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+  pointer-events: none;
+}
+.ping-dot::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ─── Ripple effect on buttons ───────────── */
+@keyframes ripple {
+  from { transform: scale(0); opacity: 0.35; }
+  to   { transform: scale(1); opacity: 0; }
+}
+.ripple-effect {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.5);
+  animation: ripple 0.55s ease-out forwards;
+  pointer-events: none;
+}
+.btn {
+  overflow: hidden; /* contain ripple */
+}
+
+/* ─── Counter numbers ─────────────────────── */
+[data-count] {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  transition: none;
+}
+
+/* ─── Typewriter cursor ───────────────────── */
+[data-typewriter] {
+  border-right: 3px solid var(--primary);
+  animation: blinkCursor 0.75s step-end infinite;
+  padding-right: 4px;
+}
+@keyframes blinkCursor {
+  0%, 100% { border-color: var(--primary); }
+  50%       { border-color: transparent; }
+}
+
+/* ─── Floating particles canvas ──────────── */
+.hero-section canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* ─── Stat cards with count ──────────────── */
+.stat-card {
+  background: var(--surface-container-lowest);
+  border: 1px solid var(--outline-variant);
+  border-radius: var(--radius-xl);
+  padding: var(--space-xl);
+  text-align: center;
+  box-shadow: var(--shadow-level-2);
+  transition:
+    transform var(--transition-bounce),
+    box-shadow var(--transition-slow);
+}
+.stat-card:hover {
+  transform: translateY(-6px) scale(1.02);
+  box-shadow: var(--shadow-hover);
+}
+.stat-number {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: var(--fw-extrabold);
+  color: var(--primary);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-label {
+  font-size: var(--text-label-md);
+  color: var(--on-surface-variant);
+  font-weight: var(--fw-medium);
+}
+
+/* ─── Animated gradient border on feature cards ─ */
+@keyframes borderGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 93, 170, 0); }
+  50%       { box-shadow: 0 0 0 3px rgba(0, 93, 170, 0.18); }
+}
+.feature-card:hover {
+  animation: borderGlow 1.5s ease-in-out;
+}
+
+/* ─── Highlight pulse on section-eyebrow ────── */
+@keyframes eyebrowPulse {
+  0%, 100% { background-color: rgba(0, 93, 170, 0.08); }
+  50%       { background-color: rgba(0, 93, 170, 0.18); }
+}
+.section-eyebrow {
+  animation: eyebrowPulse 3s ease-in-out infinite;
+}
+
+/* ─── Animated underline on nav links ───────── */
+.nav-link {
+  position: relative;
+  overflow: hidden;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0%;
+  height: 2px;
+  background: var(--primary);
+  transition:
+    width var(--transition-base),
+    left var(--transition-base);
+  border-radius: 1px;
+}
+.nav-link:hover::after,
+.nav-link.active::after {
+  width: 100%;
+  left: 0;
+}
+.nav-link.active {
+  border-bottom: none; /* use ::after instead */
+}
+
+/* ─── Subtle shimmer on form cards ──────────── */
+@keyframes cardShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+.form-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.06) 50%,
+    transparent 60%
+  );
+  background-size: 200% 100%;
+  animation: cardShimmer 4s linear infinite;
+  pointer-events: none;
+}
+.form-card {
+  position: relative;
+}
+
+/* ─── Animated gradient hero background ─────── */
+@keyframes heroGradient {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.hero-section {
+  background: linear-gradient(
+    135deg,
+    var(--surface-container-low) 0%,
+    var(--surface-container-highest) 40%,
+    var(--surface-container-high) 70%,
+    var(--surface-container-low) 100%
+  );
+  background-size: 300% 300%;
+  animation: heroGradient 12s ease infinite;
+}
+
+/* ─── Floating animation for hero image ─────── */
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+.hero-image {
+  animation: heroFloat 5s ease-in-out infinite;
+}
+
+/* ─── Reduced motion overrides ───────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .hero-wave, .ping-dot::before, [data-typewriter],
+  .section-eyebrow, .hero-image, .hero-section,
+  .form-card::before, .scroll-progress {
+    animation: none !important;
+  }
+  [data-typewriter] { border-right: none; }
+}

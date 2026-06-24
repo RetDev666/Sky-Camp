@@ -1,0 +1,260 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sky Camp — Адмін-панель</title>
+  <meta name="robots" content="noindex, nofollow"/>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&display=swap" rel="stylesheet"/>
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="backend/admin/admin.css"/>
+  </head>
+<body>
+<div class="layout">
+
+  <!-- ══ SIDEBAR ══════════════════════════════ -->
+  <aside class="sidebar" role="navigation" aria-label="Адмін навігація">
+    <div class="sidebar-logo">
+      🏕️ Sky Camp
+      <span>Адмін-панель</span>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-section="dashboard"
+           onclick="Admin.showSection('dashboard')" role="button" tabindex="0"
+           aria-label="Дашборд">
+        <span class="material-symbols-outlined">dashboard</span>
+        Дашборд
+      </div>
+      <div class="nav-item" data-section="bookings"
+           onclick="Admin.showSection('bookings')" role="button" tabindex="0"
+           aria-label="Бронювання">
+        <span class="material-symbols-outlined">event_available</span>
+        Бронювання
+      </div>
+      <div class="nav-item" data-section="contacts"
+           onclick="Admin.showSection('contacts')" role="button" tabindex="0"
+           aria-label="Звернення">
+        <span class="material-symbols-outlined">mail</span>
+        Звернення
+        <span class="badge-count" id="unread-badge" style="display:none" aria-live="polite">0</span>
+      </div>
+    </nav>
+
+    <hr class="nav-divider"/>
+    <div class="sidebar-footer">
+      <div class="nav-item theme-toggle-admin" role="button" tabindex="0" aria-label="Перемкнути тему">
+        <span class="material-symbols-outlined theme-icon-admin">dark_mode</span>
+        Тема
+      </div>
+      <div class="nav-item" onclick="Admin.logout()" role="button" tabindex="0"
+           aria-label="Вийти з адмін-панелі">
+        <span class="material-symbols-outlined">logout</span>
+        Вийти
+      </div>
+    </div>
+  </aside>
+
+  <!-- ══ MAIN CONTENT ═════════════════════════ -->
+  <main class="main" role="main">
+
+    <!-- ── Dashboard ──────────────────────── -->
+    <section id="section-dashboard" aria-label="Дашборд">
+      <div class="page-header">
+        <h1 class="page-title">📊 Дашборд</h1>
+        <button class="btn btn-ghost btn-sm" onclick="import('/backend/admin/dashboard.js').then(m=>m.loadStats())">
+          <span class="material-symbols-outlined">refresh</span> Оновити
+        </button>
+      </div>
+
+      <div class="stats-grid" id="stats-grid" aria-label="Статистика">
+        <div class="stat-box blue">
+          <div class="stat-box-num" id="s-total">—</div>
+          <div class="stat-box-label">Всього бронювань</div>
+        </div>
+        <div class="stat-box warn">
+          <div class="stat-box-num" id="s-pending">—</div>
+          <div class="stat-box-label">В обробці</div>
+        </div>
+        <div class="stat-box green">
+          <div class="stat-box-num" id="s-paid">—</div>
+          <div class="stat-box-label">Оплачено</div>
+        </div>
+        <div class="stat-box red">
+          <div class="stat-box-num" id="s-cancelled">—</div>
+          <div class="stat-box-label">Скасовано</div>
+        </div>
+        <div class="stat-box green">
+          <div class="stat-box-num" id="s-revenue">—</div>
+          <div class="stat-box-label">Дохід (оплачені)</div>
+        </div>
+        <div class="stat-box blue">
+          <div class="stat-box-num" id="s-today">—</div>
+          <div class="stat-box-label">Сьогодні</div>
+        </div>
+        <div class="stat-box warn">
+          <div class="stat-box-num" id="s-unread">—</div>
+          <div class="stat-box-label">Непрочитані звернення</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-box-num" id="s-contacts">—</div>
+          <div class="stat-box-label">Всього звернень</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Bookings ────────────────────────── -->
+    <section id="section-bookings" style="display:none" aria-label="Бронювання">
+      <div class="page-header">
+        <h1 class="page-title">📋 Бронювання</h1>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Фільтр за статусом">
+        <button class="tab active" role="tab" aria-selected="true"
+                onclick="filterBookings('all', this)">Всі</button>
+        <button class="tab" role="tab"
+                onclick="filterBookings('pending', this)">В обробці</button>
+        <button class="tab" role="tab"
+                onclick="filterBookings('paid', this)">Оплачені</button>
+        <button class="tab" role="tab"
+                onclick="filterBookings('cancelled', this)">Скасовані</button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <h2>Список бронювань</h2>
+          <div class="search-box">
+            <input
+              type="search"
+              id="booking-search"
+              placeholder="Пошук за ім'ям, email, референсом..."
+              oninput="debouncedSearch()"
+              aria-label="Пошук бронювань"
+              autocomplete="off"
+            />
+          </div>
+        </div>
+        <div style="overflow-x:auto">
+          <table role="grid" aria-label="Таблиця бронювань">
+            <thead>
+              <tr>
+                <th scope="col">Референс</th>
+                <th scope="col">Дитина</th>
+                <th scope="col">Email батьків</th>
+                <th scope="col">Програма</th>
+                <th scope="col">Ціна</th>
+                <th scope="col">Статус</th>
+                <th scope="col">Дата заявки</th>
+                <th scope="col"><span class="sr-only">Дії</span></th>
+              </tr>
+            </thead>
+            <tbody id="bookings-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="bookings-pagination" role="navigation" aria-label="Сторінки"></div>
+      </div>
+    </section>
+
+    <!-- ── Contacts ────────────────────────── -->
+    <section id="section-contacts" style="display:none" aria-label="Звернення">
+      <div class="page-header">
+        <h1 class="page-title">📩 Звернення</h1>
+        <button class="btn btn-ghost btn-sm" id="contacts-filter-btn"
+                onclick="loadContacts(1, true)">
+          <span class="material-symbols-outlined">filter_list</span>
+          Лише непрочитані
+        </button>
+      </div>
+
+      <div class="table-card">
+        <div class="table-header">
+          <h2>Повідомлення від відвідувачів</h2>
+        </div>
+        <div style="overflow-x:auto">
+          <table role="grid" aria-label="Таблиця звернень">
+            <thead>
+              <tr>
+                <th scope="col">Ім'я</th>
+                <th scope="col">Email</th>
+                <th scope="col">Тема</th>
+                <th scope="col">Повідомлення</th>
+                <th scope="col">Дата</th>
+                <th scope="col"><span class="sr-only">Дії</span></th>
+              </tr>
+            </thead>
+            <tbody id="contacts-tbody"></tbody>
+          </table>
+        </div>
+        <div class="pagination" id="contacts-pagination" role="navigation" aria-label="Сторінки"></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ══ BOOKING DETAIL MODAL ════════════════════ -->
+<div class="modal-overlay hidden" id="booking-modal" role="dialog"
+     aria-modal="true" aria-labelledby="modal-ref"
+     onclick="if(event.target===this) closeModal()">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="modal-ref">Бронювання</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()" aria-label="Закрити">✕</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+    <div class="modal-footer" id="modal-footer"></div>
+  </div>
+</div>
+
+<!-- ══ SCRIPTS ══════════════════════════════════ -->
+<script type="module" src="backend/admin/app.js"></script>
+<script type="module">
+  import { loadStats } from 'backend/admin/dashboard.js';
+  import { loadBookings, filterBookings, debouncedSearch, closeModal } from 'backend/admin/bookings.js';
+  import { loadContacts } from '/backend/admin/contacts.js';
+
+  loadStats();
+
+  // Keyboard nav for sidebar items
+  document.querySelectorAll('.nav-item[data-section]').forEach(el => {
+    el.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        el.click();
+      }
+    });
+  });
+
+  // Close modal on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') closeModal();
+  });
+
+  // Admin Theme Toggle
+  const themeBtn = document.querySelector('.theme-toggle-admin');
+  const themeIcon = document.querySelector('.theme-icon-admin');
+  function updateAdminThemeIcon() {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    themeIcon.textContent = isDark ? 'light_mode' : 'dark_mode';
+  }
+  updateAdminThemeIcon();
+  
+  themeBtn.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const newTheme = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('skycamp-theme', newTheme);
+    updateAdminThemeIcon();
+  });
+  themeBtn.addEventListener('keydown', e => {
+    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); themeBtn.click(); }
+  });
+</script>
+</body>
+</html>
