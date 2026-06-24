@@ -3,7 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import xss from 'xss';
-import { createClient } from '@libsql/client';
+import { createClient } from '@libsql/client/web';
 import nodemailer from 'nodemailer';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
