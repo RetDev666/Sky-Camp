@@ -120,9 +120,15 @@ export async function openBookingModal(id) {
       ${row('Ліки',       escHtml(b.med_medications || '—'))}
       ${row('Дієта',      escHtml(b.med_diet        || '—'))}
 
+      <div class="modal-section">Нотатки адміністратора</div>
+      <div style="margin-bottom:12px;">
+        <textarea id="booking-notes-${b.id}" style="width:100%; height:80px; padding:8px; border:1px solid var(--border); border-radius:var(--radius-sm); font-family:inherit; font-size:13px; resize:vertical;">${escHtml(b.notes || '')}</textarea>
+        <button class="btn btn-primary btn-sm" onclick="saveBookingNotes(${b.id})" style="margin-top:6px;">Зберегти нотатки</button>
+      </div>
+
       <div class="modal-section">Системна інформація</div>
       ${row('Дата заявки', b.created_at)}
-      ${row('Оновлено',    b.updated_at)}
+      ${row('Оновлено',    b.updated_at || b.created_at)}
       ${row('IP адреса',   escHtml(b.ip_address || '—'))}
     `;
 
@@ -167,6 +173,61 @@ export async function changeStatus(id, status) {
     }
   } catch (err) {
     if (err.message !== 'Unauthorized') showToast('Помилка сервера', 'error');
+  }
+}
+
+/* ── Save Notes ────────────────────────────── */
+export async function saveBookingNotes(id) {
+  const notes = document.getElementById(`booking-notes-${id}`)?.value || '';
+  try {
+    const data = await apiFetch(`/bookings/${id}/notes`, {
+      method: 'PATCH',
+      body: JSON.stringify({ notes }),
+    });
+    if (data.ok) showToast('Нотатки збережено', 'success');
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Помилка збереження', 'error');
+  }
+}
+
+/* ── Export CSV ────────────────────────────── */
+export async function exportBookingsCSV() {
+  try {
+    // Fetch all bookings for the current filter
+    const params = new URLSearchParams({ page: 1, limit: 10000, status: State.currentStatus });
+    const { bookings } = await apiFetch(`/bookings?${params}`);
+    
+    if (!bookings || bookings.length === 0) {
+      showToast('Немає даних для експорту', 'warn');
+      return;
+    }
+
+    const headers = ['ID', 'Референс', 'Ім\'я дитини', 'Прізвище', 'Дата народження', 'Вікова група', 'Батьки ПІБ', 'Email', 'Телефон', 'Програма', 'Зміни', 'Ціна', 'Статус', 'Дата створення', 'Нотатки'];
+    
+    const escapeCsv = (str) => {
+      const s = String(str || '').replace(/"/g, '""');
+      return /[",\n]/.test(s) ? `"${s}"` : s;
+    };
+
+    const rows = bookings.map(b => [
+      b.id, b.booking_ref, b.child_first, b.child_last, b.child_dob, b.child_age,
+      b.parent_name, b.parent_email, b.parent_phone, b.program, b.dates, b.price,
+      b.status, b.created_at, b.notes
+    ].map(escapeCsv).join(','));
+
+    // UTF-8 BOM for Excel support
+    const csvContent = "\\uFEFF" + [headers.join(','), ...rows].join("\\n");
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `sky_camp_bookings_${new Date().toISOString().slice(0,10)}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (err) {
+    if (err.message !== 'Unauthorized') showToast('Помилка експорту', 'error');
   }
 }
 

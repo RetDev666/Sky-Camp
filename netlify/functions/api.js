@@ -258,4 +258,148 @@ app.get('/api/admin/contacts', adminAuth, async (req, res) => {
   }
 });
 
+// =============================================
+//  CMS & Users Endpoints
+// =============================================
+
+// --- DB SETUP ---
+app.get('/api/admin/setup-db', async (req, res) => {
+  try {
+    await db.execute("CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)");
+    await db.execute("CREATE TABLE IF NOT EXISTS gallery (id INTEGER PRIMARY KEY AUTOINCREMENT, image_data TEXT)");
+    try { await db.execute("ALTER TABLE bookings ADD COLUMN notes TEXT"); } catch (e) {}
+    res.json({ ok: true, message: "DB updated" });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// --- PUBLIC CONTENT ---
+app.get('/api/public/content', async (req, res) => {
+  try {
+    const [s, g] = await Promise.all([
+      db.execute("SELECT key, value FROM settings"),
+      db.execute("SELECT image_data FROM gallery ORDER BY id DESC")
+    ]);
+    const settings = {};
+    s.rows.forEach(r => { settings[r[0]] = r[1]; });
+    const gallery = g.rows.map(r => r[0]);
+    res.json({ ok: true, settings, gallery });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// --- SETTINGS ---
+app.get('/api/admin/settings', adminAuth, async (req, res) => {
+  try {
+    const result = await db.execute("SELECT key, value FROM settings");
+    const settings = {};
+    result.rows.forEach(r => { settings[r[0]] = r[1]; });
+    res.json({ ok: true, settings });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/settings', adminAuth, async (req, res) => {
+  try {
+    const { settings } = req.body;
+    for (const [key, value] of Object.entries(settings)) {
+      await db.execute({
+        sql: "INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value",
+        args: [key, value]
+      });
+    }
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// --- GALLERY ---
+app.get('/api/admin/gallery', adminAuth, async (req, res) => {
+  try {
+    const result = await db.execute("SELECT id, image_data FROM gallery ORDER BY id DESC");
+    const images = result.rows.map(row => {
+      const obj = {};
+      result.columns.forEach((c, i) => obj[c] = row[i]);
+      return obj;
+    });
+    res.json({ ok: true, images });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/gallery', adminAuth, async (req, res) => {
+  try {
+    await db.execute({ sql: "INSERT INTO gallery (image_data) VALUES (?)", args: [req.body.image_data] });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.delete('/api/admin/gallery/:id', adminAuth, async (req, res) => {
+  try {
+    await db.execute({ sql: "DELETE FROM gallery WHERE id = ?", args: [req.params.id] });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// --- USERS ---
+app.get('/api/admin/users', adminAuth, async (req, res) => {
+  try {
+    const result = await db.execute("SELECT id, username, role, created_at FROM users");
+    const users = result.rows.map(row => {
+      const obj = {};
+      result.columns.forEach((c, i) => obj[c] = row[i]);
+      return obj;
+    });
+    res.json({ ok: true, users });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.post('/api/admin/users', adminAuth, async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    if (!username || !password) return res.status(400).json({ ok: false, error: 'Логін та пароль обов\\'язкові' });
+    const hash = await bcrypt.hash(password, 10);
+    await db.execute({
+      sql: "INSERT INTO users (username, password_hash) VALUES (?, ?)",
+      args: [username, hash]
+    });
+    res.json({ ok: true });
+  } catch (err) {
+    if (err.message.includes('UNIQUE')) return res.status(400).json({ ok: false, error: 'Користувач вже існує' });
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.delete('/api/admin/users/:id', adminAuth, async (req, res) => {
+  try {
+    const c = await db.execute("SELECT COUNT(*) as n FROM users");
+    if (c.rows[0].n <= 1) return res.status(400).json({ ok: false, error: 'Не можна видалити останнього адміністратора' });
+    await db.execute({ sql: "DELETE FROM users WHERE id = ?", args: [req.params.id] });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+// --- NOTES ---
+app.patch('/api/admin/bookings/:id/notes', adminAuth, async (req, res) => {
+  try {
+    await db.execute({ sql: "UPDATE bookings SET notes = ? WHERE id = ?", args: [req.body.notes, req.params.id] });
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 export const handler = serverless(app);

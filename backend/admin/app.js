@@ -22,10 +22,31 @@ export function getHeaders() {
 }
 
 export async function promptLogin(message = '') {
-  if (message) showToast(message, 'error');
-  const user = prompt('Логін адміністратора:');
-  const pass = prompt('Пароль:');
-  if (user && pass) {
+  const mainLayout = document.getElementById('main-layout');
+  const loginScreen = document.getElementById('login-screen');
+  
+  if (mainLayout) mainLayout.style.display = 'none';
+  if (loginScreen) loginScreen.style.display = 'flex';
+  
+  if (message) {
+    const errEl = document.getElementById('login-error');
+    if (errEl) {
+      errEl.textContent = message;
+      errEl.style.display = 'block';
+    }
+  }
+}
+
+// Attach login form handler
+const loginForm = document.getElementById('login-form');
+if (loginForm) {
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const user = document.getElementById('login-username').value;
+    const pass = document.getElementById('login-password').value;
+    const errEl = document.getElementById('login-error');
+    errEl.style.display = 'none';
+    
     try {
       const res = await fetch(`${API}/login`, {
         method: 'POST',
@@ -35,15 +56,28 @@ export async function promptLogin(message = '') {
       const data = await res.json();
       if (data.ok && data.token) {
         localStorage.setItem('admin_token', data.token);
+        
+        // Ensure DB setup is run once on first login
+        await fetch(`${API}/setup-db`);
+        
         location.reload();
       } else {
-        alert('Невірний логін або пароль');
-        promptLogin();
+        errEl.textContent = 'Невірний логін або пароль';
+        errEl.style.display = 'block';
       }
     } catch (err) {
-      alert('Помилка входу');
+      errEl.textContent = 'Помилка з\'єднання із сервером';
+      errEl.style.display = 'block';
     }
-  }
+  });
+}
+
+// Init Auth Check
+if (localStorage.getItem('admin_token')) {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-layout').style.display = 'grid'; // .layout uses CSS grid
+} else {
+  promptLogin();
 }
 
 export function logout() {
@@ -110,7 +144,7 @@ export function statusBadge(status) {
 /* ── Navigation ────────────────────────────── */
 export function showSection(name) {
   State.currentSection = name;
-  const sections = ['dashboard', 'bookings', 'contacts'];
+  const sections = ['dashboard', 'bookings', 'contacts', 'gallery', 'settings', 'users'];
 
   sections.forEach(s => {
     const el = document.getElementById(`section-${s}`);
@@ -124,6 +158,9 @@ export function showSection(name) {
   if (name === 'dashboard') import('./dashboard.js').then(m => m.loadStats());
   if (name === 'bookings')  import('./bookings.js').then(m => m.loadBookings(1));
   if (name === 'contacts')  import('./contacts.js').then(m => m.loadContacts(1));
+  if (name === 'gallery')   import('./gallery.js').then(m => m.loadGallery());
+  if (name === 'settings')  import('./settings.js').then(m => m.loadSettings());
+  if (name === 'users')     import('./users.js').then(m => m.loadUsers());
 }
 
 /* ── Expose to global for HTML onclick attrs ─ */

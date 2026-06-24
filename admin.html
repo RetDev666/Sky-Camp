@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="utf-8"/>
@@ -16,7 +16,29 @@
   <link rel="stylesheet" href="backend/admin/admin.css"/>
   </head>
 <body>
-<div class="layout">
+<!-- ══ LOGIN SCREEN ═══════════════════════════ -->
+<div id="login-screen" class="login-wrapper">
+  <div class="login-card">
+    <div class="login-logo">
+      🏕️ Sky Camp
+      <span>Адмін-панель</span>
+    </div>
+    <form id="login-form">
+      <div class="input-group">
+        <label for="login-username">Логін</label>
+        <input type="text" id="login-username" required autocomplete="username" />
+      </div>
+      <div class="input-group">
+        <label for="login-password">Пароль</label>
+        <input type="password" id="login-password" required autocomplete="current-password" />
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%; justify-content:center; padding: 12px">Увійти</button>
+      <div id="login-error" style="color:var(--error); margin-top:12px; font-size:13px; text-align:center; display:none;"></div>
+    </form>
+  </div>
+</div>
+
+<div class="layout" id="main-layout" style="display:none">
 
   <!-- ══ SIDEBAR ══════════════════════════════ -->
   <aside class="sidebar" role="navigation" aria-label="Адмін навігація">
@@ -44,6 +66,24 @@
         <span class="material-symbols-outlined">mail</span>
         Звернення
         <span class="badge-count" id="unread-badge" style="display:none" aria-live="polite">0</span>
+      </div>
+      
+      <hr class="nav-divider"/>
+      
+      <div class="nav-item" data-section="gallery"
+           onclick="Admin.showSection('gallery')" role="button" tabindex="0">
+        <span class="material-symbols-outlined">collections</span>
+        Галерея
+      </div>
+      <div class="nav-item" data-section="settings"
+           onclick="Admin.showSection('settings')" role="button" tabindex="0">
+        <span class="material-symbols-outlined">settings</span>
+        Налаштування сайту
+      </div>
+      <div class="nav-item" data-section="users"
+           onclick="Admin.showSection('users')" role="button" tabindex="0">
+        <span class="material-symbols-outlined">manage_accounts</span>
+        Адміністратори
       </div>
     </nav>
 
@@ -113,6 +153,9 @@
     <section id="section-bookings" style="display:none" aria-label="Бронювання">
       <div class="page-header">
         <h1 class="page-title">📋 Бронювання</h1>
+        <button class="btn btn-ghost btn-sm" onclick="exportBookingsCSV()">
+          <span class="material-symbols-outlined">download</span> Експорт (CSV)
+        </button>
       </div>
 
       <div class="tabs" role="tablist" aria-label="Фільтр за статусом">
@@ -195,6 +238,76 @@
       </div>
     </section>
 
+    <!-- ── Gallery ─────────────────────────── -->
+    <section id="section-gallery" style="display:none" aria-label="Галерея">
+      <div class="page-header">
+        <h1 class="page-title">🖼️ Галерея сайту</h1>
+        <label class="btn btn-primary btn-sm" style="cursor:pointer">
+          <span class="material-symbols-outlined">add_photo_alternate</span> Завантажити фото
+          <input type="file" id="gallery-upload" accept="image/jpeg, image/png, image/webp" style="display:none" onchange="uploadGalleryImage(this)">
+        </label>
+      </div>
+      <div class="gallery-grid" id="gallery-grid">
+        <!-- Images injected here -->
+      </div>
+    </section>
+
+    <!-- ── Settings ────────────────────────── -->
+    <section id="section-settings" style="display:none" aria-label="Налаштування">
+      <div class="page-header">
+        <h1 class="page-title">⚙️ Налаштування сайту</h1>
+        <button class="btn btn-primary btn-sm" onclick="saveSettings()">Зберегти зміни</button>
+      </div>
+      <div class="table-card" style="padding:24px">
+        <form id="settings-form" style="max-width:500px; display:flex; flex-direction:column; gap:16px;">
+          <div class="input-group">
+            <label>Телефон 1</label>
+            <input type="text" name="phone1" placeholder="+38 (000) 000-00-00">
+          </div>
+          <div class="input-group">
+            <label>Телефон 2</label>
+            <input type="text" name="phone2" placeholder="+38 (000) 000-00-00">
+          </div>
+          <div class="input-group">
+            <label>Email контактний</label>
+            <input type="email" name="contact_email" placeholder="info@sky-camp.pp.ua">
+          </div>
+          <div class="input-group">
+            <label>Посилання на Instagram</label>
+            <input type="url" name="instagram_url" placeholder="https://instagram.com/...">
+          </div>
+          <div class="input-group">
+            <label>Посилання на Facebook</label>
+            <input type="url" name="facebook_url" placeholder="https://facebook.com/...">
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ── Users ───────────────────────────── -->
+    <section id="section-users" style="display:none" aria-label="Адміністратори">
+      <div class="page-header">
+        <h1 class="page-title">🛡️ Адміністратори</h1>
+        <button class="btn btn-primary btn-sm" onclick="document.getElementById('user-modal').classList.remove('hidden')">
+          <span class="material-symbols-outlined">person_add</span> Додати
+        </button>
+      </div>
+      <div class="table-card">
+        <table role="grid">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Логін</th>
+              <th>Роль</th>
+              <th>Створено</th>
+              <th>Дії</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
   </main>
 </div>
 
@@ -212,12 +325,50 @@
   </div>
 </div>
 
+<!-- ══ USER MODAL ══════════════════════════════ -->
+<div class="modal-overlay hidden" id="user-modal" role="dialog"
+     onclick="if(event.target===this) this.classList.add('hidden')">
+  <div class="modal" style="max-width:400px">
+    <div class="modal-head">
+      <h3>Новий адміністратор</h3>
+      <button class="btn btn-ghost btn-sm" onclick="document.getElementById('user-modal').classList.add('hidden')">✕</button>
+    </div>
+    <div class="modal-body">
+      <form id="new-user-form" style="display:flex; flex-direction:column; gap:16px;">
+        <div class="input-group">
+          <label>Логін</label>
+          <input type="text" id="new-user-username" required>
+        </div>
+        <div class="input-group">
+          <label>Пароль</label>
+          <input type="password" id="new-user-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="justify-content:center">Створити</button>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- ══ SCRIPTS ══════════════════════════════════ -->
 <script type="module" src="backend/admin/app.js"></script>
 <script type="module">
-  import { loadStats } from 'backend/admin/dashboard.js';
-  import { loadBookings, filterBookings, debouncedSearch, closeModal } from 'backend/admin/bookings.js';
+  import { loadStats } from '/backend/admin/dashboard.js';
+  import { loadBookings, filterBookings, debouncedSearch, closeModal, exportBookingsCSV, saveBookingNotes } from '/backend/admin/bookings.js';
   import { loadContacts } from '/backend/admin/contacts.js';
+  import { uploadGalleryImage, deleteGalleryImage } from '/backend/admin/gallery.js';
+  import { saveSettings } from '/backend/admin/settings.js';
+  import { deleteUser } from '/backend/admin/users.js';
+
+  // Expose CMS functions to window for onclick handlers
+  window.filterBookings = filterBookings;
+  window.debouncedSearch = debouncedSearch;
+  window.closeModal = closeModal;
+  window.exportBookingsCSV = exportBookingsCSV;
+  window.saveBookingNotes = saveBookingNotes;
+  window.uploadGalleryImage = uploadGalleryImage;
+  window.deleteGalleryImage = deleteGalleryImage;
+  window.saveSettings = saveSettings;
+  window.deleteUser = deleteUser;
 
   loadStats();
 

@@ -144,4 +144,48 @@
     if (!document.getElementById("booking-stepper")) return;
     // Do nothing special — normal link behaviour
   });
+
+  /* ─── CMS Content Loading ──────────────────────── */
+  fetch('/api/public/content')
+    .then(r => r.json())
+    .then(data => {
+      if (!data.ok) return;
+      
+      // Settings
+      if (data.settings) {
+        if (data.settings.phone1) {
+          document.querySelectorAll('a[href^="tel:"]').forEach(el => {
+            el.href = 'tel:' + data.settings.phone1.replace(/[^\d+]/g, '');
+            if (!el.classList.contains('icon-only')) el.textContent = data.settings.phone1;
+          });
+        }
+        if (data.settings.contact_email) {
+          document.querySelectorAll('a[href^="mailto:"]').forEach(el => {
+            el.href = 'mailto:' + data.settings.contact_email;
+            if (!el.classList.contains('icon-only')) el.textContent = data.settings.contact_email;
+          });
+        }
+        if (data.settings.instagram_url) {
+          document.querySelectorAll('a[href*="instagram.com"]').forEach(el => el.href = data.settings.instagram_url);
+        }
+        if (data.settings.facebook_url) {
+          document.querySelectorAll('a[href*="facebook.com"]').forEach(el => el.href = data.settings.facebook_url);
+        }
+      }
+      
+      // Gallery
+      if (data.gallery && data.gallery.length > 0) {
+        const dynGallery = document.getElementById('dynamic-gallery');
+        if (dynGallery) {
+          dynGallery.innerHTML = data.gallery.map(imgData => `
+            <div class="gallery-item" onclick="openLightbox(this)">
+              <img src="${imgData}" alt="Фото табору Sky Camp" loading="lazy">
+              <div class="gallery-item-overlay"><p class="gallery-item-caption">Sky Camp</p></div>
+            </div>
+          `).join('');
+        }
+      }
+    })
+    .catch(err => console.error('CMS Load Error:', err));
+
 })();
