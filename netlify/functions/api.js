@@ -1,12 +1,12 @@
-import serverless from 'serverless-http';
-import express from 'express';
-import cors from 'cors';
-import helmet from 'helmet';
-import xss from 'xss';
-import { createClient } from '@libsql/client/web';
-import nodemailer from 'nodemailer';
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
+const serverless = require('serverless-http');
+const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+const xss = require('xss');
+const { createClient } = require('@libsql/client/web');
+const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 
 const app = express();
 
@@ -446,4 +446,4 @@ app.patch('/api/admin/bookings/:id/notes', adminAuth, async (req, res) => {
   }
 });
 
-export const handler = serverless(app);
+module.exports.handler = serverless(app);
