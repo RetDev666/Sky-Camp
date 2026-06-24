@@ -265,6 +265,7 @@ app.get('/api/admin/contacts', adminAuth, async (req, res) => {
 // --- DB SETUP ---
 app.get('/api/admin/setup-db', async (req, res) => {
   try {
+    const db = getDb();
     await db.execute("CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)");
     await db.execute("CREATE TABLE IF NOT EXISTS gallery (id INTEGER PRIMARY KEY AUTOINCREMENT, image_data TEXT)");
     await db.execute("CREATE TABLE IF NOT EXISTS shifts (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, start_date TEXT, end_date TEXT)");
@@ -278,6 +279,7 @@ app.get('/api/admin/setup-db', async (req, res) => {
 // --- PUBLIC CONTENT ---
 app.get('/api/public/content', async (req, res) => {
   try {
+    const db = getDb();
     const [s, g, sh] = await Promise.all([
       db.execute("SELECT key, value FROM settings"),
       db.execute("SELECT image_data FROM gallery ORDER BY id DESC"),
@@ -300,6 +302,7 @@ app.get('/api/public/content', async (req, res) => {
 // --- SETTINGS ---
 app.get('/api/admin/settings', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     const result = await db.execute("SELECT key, value FROM settings");
     const settings = {};
     result.rows.forEach(r => { settings[r[0]] = r[1]; });
@@ -311,6 +314,7 @@ app.get('/api/admin/settings', adminAuth, async (req, res) => {
 
 app.post('/api/admin/settings', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     const { settings } = req.body;
     for (const [key, value] of Object.entries(settings)) {
       await db.execute({
@@ -327,6 +331,7 @@ app.post('/api/admin/settings', adminAuth, async (req, res) => {
 // --- GALLERY ---
 app.get('/api/admin/gallery', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     const result = await db.execute("SELECT id, image_data FROM gallery ORDER BY id DESC");
     const images = result.rows.map(row => {
       const obj = {};
@@ -341,6 +346,7 @@ app.get('/api/admin/gallery', adminAuth, async (req, res) => {
 
 app.post('/api/admin/gallery', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     await db.execute({ sql: "INSERT INTO gallery (image_data) VALUES (?)", args: [req.body.image_data] });
     res.json({ ok: true });
   } catch (err) {
@@ -350,6 +356,7 @@ app.post('/api/admin/gallery', adminAuth, async (req, res) => {
 
 app.delete('/api/admin/gallery/:id', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     await db.execute({ sql: "DELETE FROM gallery WHERE id = ?", args: [req.params.id] });
     res.json({ ok: true });
   } catch (err) {
@@ -360,6 +367,7 @@ app.delete('/api/admin/gallery/:id', adminAuth, async (req, res) => {
 // --- SHIFTS ---
 app.get('/api/admin/shifts', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     const result = await db.execute("SELECT id, name, start_date, end_date FROM shifts ORDER BY id ASC");
     const shifts = result.rows.map(row => {
       const obj = {};
@@ -374,6 +382,7 @@ app.get('/api/admin/shifts', adminAuth, async (req, res) => {
 
 app.post('/api/admin/shifts', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     const { name, start_date, end_date } = req.body;
     await db.execute({ 
       sql: "INSERT INTO shifts (name, start_date, end_date) VALUES (?, ?, ?)", 
@@ -387,6 +396,7 @@ app.post('/api/admin/shifts', adminAuth, async (req, res) => {
 
 app.delete('/api/admin/shifts/:id', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     await db.execute({ sql: "DELETE FROM shifts WHERE id = ?", args: [req.params.id] });
     res.json({ ok: true });
   } catch (err) {
@@ -397,6 +407,7 @@ app.delete('/api/admin/shifts/:id', adminAuth, async (req, res) => {
 // --- USERS ---
 app.get('/api/admin/users', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     const result = await db.execute("SELECT id, username, role, created_at FROM users");
     const users = result.rows.map(row => {
       const obj = {};
@@ -411,6 +422,7 @@ app.get('/api/admin/users', adminAuth, async (req, res) => {
 
 app.post('/api/admin/users', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     const { username, password } = req.body;
     if (!username || !password) return res.status(400).json({ ok: false, error: "Логін та пароль обов'язкові" });
     const hash = await bcrypt.hash(password, 10);
@@ -427,6 +439,7 @@ app.post('/api/admin/users', adminAuth, async (req, res) => {
 
 app.delete('/api/admin/users/:id', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     const c = await db.execute("SELECT COUNT(*) as n FROM users");
     if (c.rows[0].n <= 1) return res.status(400).json({ ok: false, error: 'Не можна видалити останнього адміністратора' });
     await db.execute({ sql: "DELETE FROM users WHERE id = ?", args: [req.params.id] });
@@ -439,6 +452,7 @@ app.delete('/api/admin/users/:id', adminAuth, async (req, res) => {
 // --- NOTES ---
 app.patch('/api/admin/bookings/:id/notes', adminAuth, async (req, res) => {
   try {
+    const db = getDb();
     await db.execute({ sql: "UPDATE bookings SET notes = ? WHERE id = ?", args: [req.body.notes, req.params.id] });
     res.json({ ok: true });
   } catch (err) {
